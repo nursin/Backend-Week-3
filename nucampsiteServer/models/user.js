@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
-const passportLocalMongoose = require('passport-local-mongoose');
+// 
+const passportLocalMongoose = require('passport-local-mongoose'); // imports middleware
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
@@ -17,6 +18,8 @@ const userSchema = new Schema({
   }
 });
 
-userSchema.plugin(passportLocalMongoose);
+// handles hashing and salting the user info, also provides additional 
+// authentication methods. such as the authenicate method we use later
+userSchema.plugin(passportLocalMongoose); 
 
 module.exports = mongoose.model('User', userSchema);

@@ -52,8 +52,8 @@ var app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
-app.use(logger('dev'));
-app.use(express.json());
+app.use(logger('dev')); // morgan looks and logged to console and passes to express.json
+app.use(express.json()); // parses the req body to be used in our app more easily
 app.use(express.urlencoded({ extended: false }));
 // app.use(cookieParser('12345-67890-09876-54321'));
 

@@ -1,8 +1,7 @@
 const express = require('express');
-const { NetworkAuthenticationRequire } = require('http-errors');
 const User = require('../models/user');
-const passport = require('passport');
-const authenticate = require('../authenticate');
+const passport = require('passport'); // import passport
+const authenticate = require('../authenticate'); // our authentication file
 
 const router = express.Router();
 
@@ -11,6 +10,8 @@ router.get('/', function (req, res, next) {
   res.send('respond with a resource');
 });
 
+//after the user goes to our endpoint www.susers/signup.com) the server registered the user using 
+// a passport Strategy called register which grabs the username and password from the body (HTML forms)
 router.post('/signup', (req, res) => {
   User.register(
     new User({username: req.body.username}),
@@ -27,13 +28,16 @@ router.post('/signup', (req, res) => {
         if (req.body.lastname) {
           user.lastname = req.body.lastname;
         }
-        user.save(err => {
+        // when modifying a doc that has default values must use save method from mongoose
+        user.save(err => { // mongoose method to save the user if they provide a first 
           if (err) {
             res.statusCode = 500;
             res.setHeader('Content-Type', 'application/json');
             res.json({err: err});
             return;
           }
+          // passport want you to implement this function to verify user after registering
+          // grabs the username password  == authenticate('local)
           passport.authenticate('local')(req, res, () => {
             res.statusCode = 200;
             res.setHeader('Content-Type', 'application/json');
@@ -45,8 +49,11 @@ router.post('/signup', (req, res) => {
   );
 });
 
+// 1st arg endpoint (www.users/login.com)
+// 2nd arg middleware passport.authenticate('local) == grabs the username and password from the req.body
+// 3rd arg callback function to verify the jwt token
 router.post('/login', passport.authenticate('local'), (req, res) => {
-  const token = authenticate.getToken({_id: req.user._id});
+  const token = authenticate.getToken({_id: req.user._id}); // req user is coming from either passport authenticate local or exports.verifyuser
   res.statusCode = 200;
   res.setHeader('Content-Type', 'application/json');
   res.json({success: true, token, status: 'You are successfully logged in!'});
