@@ -12,7 +12,7 @@ const config = require('./config.js'); // referencing our config.js file with se
 // will check your server to see if it the strategies are implemented correctly
 // if you dont have these 2 lines of code then your functionality
 // to 'login' a user will not work
-exports.local = passport.use(new LocalStrategy(User.authenticate())); 
+exports.local = passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser()); // for sessions done on user to store
 passport.deserializeUser(User.deserializeUser()); // done on user to use?
 
@@ -46,6 +46,8 @@ exports.jwtPassport = passport.use(
   )
 );
 
+
+
 // verifying the user
 // this middleware will grab this ibformation and comper it with the information in the database
 // session false == dont create session
@@ -55,4 +57,12 @@ exports.jwtPassport = passport.use(
 exports.verifyUser = passport.authenticate('jwt', { session: false })
 
 // its just verifying that the user is an admin
-// exports.verifyAdmin = passport.authenticate('jwt', { session: false })
+exports.verifyAdmin = (req, res, next) => {
+  if (req.user.admin) {
+    return next();
+  } else {
+    err = new Error('You are not authorized to perform this operation!');
+    err.status = 403;
+    return next(err);
+  }
+};

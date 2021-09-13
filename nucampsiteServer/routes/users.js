@@ -6,8 +6,14 @@ const authenticate = require('../authenticate'); // our authentication file
 const router = express.Router();
 
 /* GET users listing. */
-router.get('/', function (req, res, next) {
-  res.send('respond with a resource');
+router.get('/', authenticate.verifyUser, authenticate.verifyAdmin, function (req, res, next) {
+  User.find() // mongoose queries mongodb for all User documents
+  .then(users => { // promise catch return
+    res.statusCode = 200; 
+    res.setHeader('Content-Type', 'application/json');
+    res.json(users); // ends response and sends to client
+  })
+  .catch(err => next(err)); // catches errs and passes them to express next func
 });
 
 //after the user goes to our endpoint www.susers/signup.com) the server registered the user using 
